@@ -1,4 +1,3 @@
-from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from .models import Category, Post, Comment
 from django.utils import timezone
