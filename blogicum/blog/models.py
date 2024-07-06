@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db.models import Count
 from django.conf import settings
+from django.utils import timezone
+
 
 User = get_user_model()
 
@@ -56,8 +59,26 @@ class Location(BaseBlogModel):
         return self.name
 
 
+class PublishedQuerySet(models.QuerySet):
+
+    def filter_posts_for_publication(self):
+        return self.filter(
+            pub_date__lte=timezone.now(),
+            is_published=True,
+            category__is_published=True,
+        )
+
+    def count_comments(self):
+        return self.select_related(
+            'category', 'location', 'author'
+        ).annotate(comment_count=Count('comments')).order_by('-pub_date')
+
+
 class Post(BaseBlogModel):
-    title = models.CharField('Заголовок', max_length=settings.MAX_LENGTH)
+    image = models.ImageField(
+        'Фото', blank=True, upload_to='posts_images/', null=True
+    )
+    title = models.CharField('Заголовок', max_length=100)
     text = models.TextField('Текст')
     pub_date = models.DateTimeField('Дата и время публикации',
                                     help_text='Если установить дату и время в'
@@ -67,7 +88,7 @@ class Post(BaseBlogModel):
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор публикации',
-        related_name='posts',
+        related_name='users',
     )
     location = models.ForeignKey(
         Location,
@@ -75,7 +96,7 @@ class Post(BaseBlogModel):
         null=True,
         blank=True,
         verbose_name='Местоположение',
-        related_name='posts',
+        related_name='locations',
     )
     category = models.ForeignKey(
         Category,
@@ -85,9 +106,36 @@ class Post(BaseBlogModel):
         related_name='posts',
     )
 
-    def __str__(self):
-        return self.text[:100]
+    objects = PublishedQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
+
+    def __str__(self):
+        return self.text[:100]
+
+
+class Comment(BaseBlogModel):
+
+    text = models.TextField('Текст')
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        verbose_name='Пост',
+        related_name='comments'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Автор комментария',
+        related_name='comments'
+    )
+
+    class Meta:
+        ordering = ('created_at',)
+        verbose_name = 'комментарий'
+        verbose_name_plural = 'Комментарии'
+
+    def __str__(self):
+        return self.text[:100]

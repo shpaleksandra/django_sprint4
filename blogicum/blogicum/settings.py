@@ -7,7 +7,9 @@ SECRET_KEY = 'django-insecure-&(d1figx!e^fw-dq29*w4mvgiah1_$&s9jo$=t00g55^8^2g(p
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',]
 
 
 INSTALLED_APPS = [
@@ -18,7 +20,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'blog.apps.BlogConfig',
-    'pages.apps.PagesConfig'
+    'pages.apps.PagesConfig',
+    'users.apps.UsersConfig',
+    'django_bootstrap5'
 ]
 
 MIDDLEWARE = [
@@ -96,3 +100,11 @@ STATICFILES_DIRS = [BASE_DIR / 'static_dev']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MAX_LENGTH = 256
+
+MEDIA_ROOT = BASE_DIR / 'media'
+
+MEDIA_URL = 'media/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+
+EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
