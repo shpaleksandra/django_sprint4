@@ -159,11 +159,13 @@ def add_comment(request, post_id):
 
     if request.method != 'POST':
         form = CommentForm()
-        return render(request, 'blog/detail.html', {'form': form, 'post': post})
+        return render(request, 'blog/detail.html',
+                      {'form': form, 'post': post})
 
     form = CommentForm(request.POST)
     if not form.is_valid():
-        return render(request, 'blog/detail.html', {'form': form, 'post': post})
+        return render(request, 'blog/detail.html',
+                      {'form': form, 'post': post})
 
     comment = form.save(commit=False)
     comment.author = request.user
