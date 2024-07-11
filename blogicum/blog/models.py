@@ -88,7 +88,7 @@ class Post(BaseBlogModel):
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор публикации',
-        related_name='users',
+        related_name='posts',
     )
     location = models.ForeignKey(
         Location,
@@ -96,7 +96,7 @@ class Post(BaseBlogModel):
         null=True,
         blank=True,
         verbose_name='Местоположение',
-        related_name='locations',
+        related_name='posts',
     )
     category = models.ForeignKey(
         Category,

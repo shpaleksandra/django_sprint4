@@ -72,7 +72,7 @@ class CategoryListView(ListView):
     model = Category
     category = None
     template_name = 'blog/category.html'
-    paginate_by: int = 10
+    paginate_by = 10
 
     def dispatch(self, request, *args, **kwargs):
         self.category = get_object_or_404(
@@ -157,18 +157,20 @@ class PostsDeleteView(LoginRequiredMixin, DeleteView):
 def add_comment(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.author = request.user
-            comment.post = post
-            comment.save()
-            return redirect('blog:post_detail', post_id=post_id)
-    else:
+    if request.method != 'POST':
         form = CommentForm()
+        return render(request, 'blog/detail.html', {'form': form, 'post': post})
 
-    return render(request, 'blog/detail.html', {'form': form, 'post': post})
+    form = CommentForm(request.POST)
+    if not form.is_valid():
+        return render(request, 'blog/detail.html', {'form': form, 'post': post})
+
+    comment = form.save(commit=False)
+    comment.author = request.user
+    comment.post = post
+    comment.save()
+
+    return redirect('blog:post_detail', post_id=post_id)
 
 
 class CommentUpdateView(LoginRequiredMixin, UpdateView):
@@ -240,7 +242,7 @@ def get_profile(request, username):
 @login_required
 def edit_profile(request):
     if request.method == 'POST':
-        form = UserForm(request.POST, instance=request.user)
+        form = UserForm(request.POST or None, instance=request.user)
         if form.is_valid():
             form.save()
             return redirect('blog:index')
