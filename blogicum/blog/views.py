@@ -243,11 +243,10 @@ def get_profile(request, username):
 
 @login_required
 def edit_profile(request):
-    if request.method == 'POST':
-        form = UserForm(request.POST or None, instance=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('blog:index')
-    else:
+    if request.method != 'POST':
         form = UserForm(instance=request.user)
         return render(request, 'blog/user.html', {'form': form})
+    form = UserForm(request.POST or None, instance=request.user)
+    if form.is_valid():
+        form.save()
+        return redirect('blog:index')

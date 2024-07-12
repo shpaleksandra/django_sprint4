@@ -1,9 +1,9 @@
 from django.urls import path
 
-from .views import index, add_comment, get_profile, edit_profile
-from .views import CategoryListView, PostDetailView, PostCreateView
-from .views import PostUpdateView, CommentUpdateView, CommentDeleteView
-from .views import PostsDeleteView
+from .views import (CategoryListView, CommentDeleteView, CommentUpdateView,
+                    PostCreateView, PostDetailView, PostsDeleteView,
+                    PostUpdateView, add_comment, edit_profile, get_profile,
+                    index)
 
 app_name = 'blog'
 
